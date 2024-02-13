@@ -30,7 +30,7 @@ public class SpringSecurityConfig {
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-//        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(true);
         return source;
     }
     private final JwtRequestFilter jwtRequestFilter;
@@ -45,8 +45,8 @@ public class SpringSecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests((authh) -> authh
 
-//                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
-//                        .requestMatchers("/client").hasAuthority("ROLE_CLIENT")
+                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/client").hasAuthority("ROLE_CLIENT")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
