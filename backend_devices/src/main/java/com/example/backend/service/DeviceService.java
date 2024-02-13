@@ -113,4 +113,9 @@ public class DeviceService {
 
         return deviceToBeDeleted;
     }
+
+//    public List<Device> findDevicesByUsername(String username) {
+//
+//
+//    }
 }

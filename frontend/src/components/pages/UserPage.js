@@ -14,23 +14,31 @@ const UsersPage = () => {
       navigate('/');
     }
     console.log("test");
-    fetch("http://127.0.0.1:8081/devices").then((response) => response.json())
-        .then((data) => {
-            //console.log(data);
-            //Display only the device of the logged in user
-            //console.log(data[0].clientID + " "+ localStorage.getItem("clientID"));
-            const clientID = localStorage.getItem("clientID");
-            console.log("Client ID from localStorage:", clientID);
 
+  const clientID = localStorage.getItem("clientID");
+  console.log("Client ID from localStorage:", clientID);
+
+// Assuming you have an authentication token stored in localStorage
+  const authToken = localStorage.getItem("authToken");
+  console.log("Auth Token from localStorage:", authToken);
+
+  fetch("http://localhost:8081/devices", {
+      headers: {
+          'Authorization': `Bearer ${authToken}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+      }
+  })
+      .then((response) => response.json())
+      .then((data) => {
           const filteredDevices = data.filter((device) => {
-             console.log("Device:", device);
               return device.clientID == clientID;
           });
 
-            console.log("Filtered Devices:", filteredDevices);
-            //console.log(filteredDevices);
-            setDevices(filteredDevices);
-        });
+          console.log("Filtered Devices:", filteredDevices);
+          // console.log(filteredDevices);
+          setDevices(filteredDevices);
+      });
   }, []);
 
   return (

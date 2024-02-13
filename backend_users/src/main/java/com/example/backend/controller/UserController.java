@@ -1,15 +1,22 @@
 package com.example.backend.controller;
 
+import com.example.backend.jwt.JwtUtil;
 import com.example.backend.persistence.LoginRequest;
 import com.example.backend.persistence.UserEntity;
 import com.example.backend.service.UserService;
+
+import com.example.backend.request.AuthRequest;
+import com.example.backend.response.JwtResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import com.example.backend.controller.ErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,9 +25,10 @@ import java.util.Optional;
 public class UserController {
 
     UserService userService;
-
+    private final JwtUtil jwtUtil;
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
         this.userService = userService;
     }
 
@@ -95,5 +103,23 @@ public class UserController {
         }
 
         return new ResponseEntity<>(userEntity, status);
+    }
+
+     @PostMapping("/authenticate")
+    public ResponseEntity<?> createToken(@RequestBody AuthRequest authRequest) {
+        String username = authRequest.getUsername();
+        String password = authRequest.getPassword();
+
+        Optional<UserEntity> optionalUser = userService.authenticate(username, password);
+
+        if (optionalUser.isPresent()) {
+            UserEntity authenticatedUser = optionalUser.get();
+            String jwt = jwtUtil.generateToken(authenticatedUser.getUsername());
+            return ResponseEntity.ok(new JwtResponse(jwt, authenticatedUser.getUsername()));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse("Invalid credentials"));
+        }
     }
 }

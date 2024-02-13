@@ -24,22 +24,39 @@ const LoginPage = ({loggedInUser, setLoggedInUser}) => {
     const [password, setPassword] = useState('');
 
 
-  function performLogin() {
-      const userData = JSON.stringify({'username': username, 'password': password});
+    function performLogin() {
+        const userData = JSON.stringify({ 'username': username, 'password': password });
         console.log(userData);
 
-      fetch("http://localhost:8080/login", {
-        method: 'POST', 
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: userData,})
-          .then((response) => response.json())
-          .then((data) => {
-              console.log(data);
-              setLoggedInUser(data);
-      });
-  }
+        fetch("http://localhost:8080/authenticate", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: userData,
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+
+                // Assuming the token is present in the 'token' property of the response
+                const authToken = data.token;
+
+                // Store the token in local storage
+                localStorage.setItem("authToken", authToken);
+
+                // Set the logged-in user state or perform any other actions as needed
+                setLoggedInUser(data);
+            })
+            .catch((error) => {
+                console.error('Error during login:', error);
+                // Handle the error as needed
+            });
+        if(localStorage.getItem("status") === "admin")
+            navigate('/admin');
+        else
+            navigate('/user');
+    }
 
   return (
       <div className="User">

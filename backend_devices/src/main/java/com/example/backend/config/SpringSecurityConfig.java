@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import ro.tuc.ds2020.jwt.JwtRequestFilter;
+import com.example.backend.jwt.JwtRequestFilter;
 
 import java.util.List;
 
@@ -25,12 +25,12 @@ public class SpringSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3003"));
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        configuration.setAllowCredentials(true);
+//        configuration.setAllowCredentials(true);
         return source;
     }
     private final JwtRequestFilter jwtRequestFilter;
@@ -45,8 +45,8 @@ public class SpringSecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests((authh) -> authh
 
-                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/client").hasAuthority("ROLE_CLIENT")
+//                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
+//                        .requestMatchers("/client").hasAuthority("ROLE_CLIENT")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

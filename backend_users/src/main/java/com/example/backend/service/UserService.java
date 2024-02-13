@@ -11,15 +11,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Import BCrypt
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserService {
 
     UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder; 
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserEntity getUserById(Integer id){
@@ -118,5 +122,12 @@ public class UserService {
 
     public Optional<UserEntity> authenticateUser(String username, String password) {
         return userRepository.findByUsernameAndPassword(username, password);
+    }
+
+    public Optional<UserEntity> authenticate(String username, String password) {
+        // Optional<UserEntity> userOptional = Optional.ofNullable(userRepository.findByUsername(username));
+        return userRepository.findByUsernameAndPassword(username, password);
+        // return userOptional
+        //         .filter(user -> (password.equals(user.getPassword())) ); //passwordEncoder.matches(password, user.getPassword())
     }
 }
